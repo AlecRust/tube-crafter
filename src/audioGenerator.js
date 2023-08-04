@@ -16,7 +16,7 @@ const convertTextToSpeech = async (text, output) => {
             audioConfig: { audioEncoding: 'MP3' },
         };
 
-        console.log(`🔉 Creating MP3 of paragraph:`);
+        console.log(`🔉 Creating MP3 of text:`);
         console.log(`${text}\n`);
 
         // Make the Text-to-Speech request

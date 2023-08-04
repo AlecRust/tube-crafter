@@ -14,22 +14,23 @@ async function parseInputFile(inputFilePath) {
         const input = await fs.readFile(inputFilePath, 'utf8');
         const md = new MarkdownIt();
         const tokens = md.parse(input, {});
-        const paragraphTokens = tokens.reduce((paragraphs, token, i) => {
-            if (token.type === 'paragraph_open') {
-                paragraphs.push(tokens[i + 1].content);
-            }
-            return paragraphs;
-        }, []);
-        console.log(`📝 Found ${paragraphTokens.length} paragraphs to process`);
-        return paragraphTokens;
-
+        return tokens;
     } catch (error) {
         throw new Error(`Failed to process input file: ${error.message}`);
     }
 }
 
-async function processParagraphs(paragraphs, outputDir) {
+async function processParagraphs(tokens, outputDir) {
     try {
+        const paragraphs = tokens.reduce((paragraphs, token, i) => {
+            if (token.type === 'paragraph_open') {
+                paragraphs.push(tokens[i + 1].content);
+            }
+            return paragraphs;
+        }, []);
+
+        console.log(`📝 Found ${paragraphs.length} paragraphs to process`);
+
         const processingPromises = paragraphs.map((paragraph, i) => {
             const audioPath = path.join(outputDir, 'audio', `${i}.mp3`);
             const imagePath = path.join(outputDir, 'images', `${i}.jpg`);
@@ -63,12 +64,12 @@ async function main() {
             throw new Error(`The input file ${inputFile} does not exist`);
         }
 
-        const paragraphs = await parseInputFile(inputFile);
+        const tokens = await parseInputFile(inputFile);
         const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
         const outputDir = `./output/${timestamp}`;
 
         // Create audio and image files for each paragraph
-        await processParagraphs(paragraphs, outputDir);
+        await processParagraphs(tokens, outputDir);
 
         // Create a video from the audio and image files
         await videoGenerator(

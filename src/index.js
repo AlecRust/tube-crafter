@@ -5,9 +5,9 @@ const { hideBin } = require('yargs/helpers');
 const fs = require('fs-extra');
 const path = require('path');
 const MarkdownIt = require('markdown-it');
-const textToSpeech = require('./textToSpeech');
+const audioGenerator = require('./audioGenerator');
 const imageGenerator = require('./imageGenerator');
-const videoComposer = require('./videoComposer');
+const videoGenerator = require('./videoGenerator');
 
 async function parseInputFile(inputFilePath) {
     try {
@@ -34,7 +34,7 @@ async function processParagraphs(paragraphs, outputDir) {
             const audioPath = path.join(outputDir, 'audio', `${i}.mp3`);
             const imagePath = path.join(outputDir, 'images', `${i}.jpg`);
             return Promise.all([
-                textToSpeech(paragraph, audioPath),
+                audioGenerator(paragraph, audioPath),
                 imageGenerator(paragraph, imagePath),
             ]);
         });
@@ -71,7 +71,7 @@ async function main() {
         await processParagraphs(paragraphs, outputDir);
 
         // Create a video from the audio and image files
-        await videoComposer(
+        await videoGenerator(
           path.join(outputDir, 'audio'),
           path.join(outputDir, 'images'),
           outputDir,

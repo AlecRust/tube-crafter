@@ -20,28 +20,28 @@ async function parseInputFile(inputFilePath) {
     }
 }
 
-async function processParagraphs(tokens, outputDir) {
+async function processTextTokens(tokens, outputDir) {
     try {
-        const paragraphs = tokens.reduce((paragraphs, token, i) => {
-            if (token.type === 'paragraph_open') {
-                paragraphs.push(tokens[i + 1].content);
+        const textLines = tokens.reduce((lines, token, i) => {
+            if (token.type === 'paragraph_open' || token.type === 'heading_open') {
+                lines.push(tokens[i + 1].content);
             }
-            return paragraphs;
+            return lines;
         }, []);
 
-        console.log(`📝 Found ${paragraphs.length} paragraphs to process`);
+        console.log(`📝 Found ${textLines.length} text lines to process`);
 
-        const processingPromises = paragraphs.map((paragraph, i) => {
+        const processingPromises = textLines.map((line, i) => {
             const audioPath = path.join(outputDir, 'audio', `${i}.mp3`);
             const imagePath = path.join(outputDir, 'images', `${i}.jpg`);
             return Promise.all([
-                audioGenerator(paragraph, audioPath),
-                imageGenerator(paragraph, imagePath),
+                audioGenerator(line, audioPath),
+                imageGenerator(line, imagePath),
             ]);
         });
         await Promise.all(processingPromises);
     } catch (error) {
-        throw new Error(`Failed to process paragraphs: ${error.message}`);
+        throw new Error(`Failed to process text tokens: ${error.message}`);
     }
 }
 
@@ -68,8 +68,8 @@ async function main() {
         const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
         const outputDir = `./output/${timestamp}`;
 
-        // Create audio and image files for each paragraph
-        await processParagraphs(tokens, outputDir);
+        // Create audio and image files for each text line
+        await processTextTokens(tokens, outputDir);
 
         // Create a video from the audio and image files
         await videoGenerator(

@@ -50,7 +50,7 @@ const generateImageFromText = async (text, output) => {
     const imageResponse = await axios.get(imageUrl, { responseType: 'arraybuffer' });
 
     await fs.outputFile(output, Buffer.from(imageResponse.data, 'binary'));
-    console.log(`✅ Image saved to: ${output}`);
+    console.log(`✅ Image saved to: ${output}\n`);
   } catch (error) {
     console.error(`Failed to generate image from text: ${error.message}`);
     throw error; // Propagate the error to the caller

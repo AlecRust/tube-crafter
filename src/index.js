@@ -4,6 +4,7 @@ const yargs = require('yargs/yargs');
 const { hideBin } = require('yargs/helpers');
 const fs = require('fs-extra');
 const path = require('path');
+const MarkdownIt = require('markdown-it');
 const textToSpeech = require('./textToSpeech');
 const imageGenerator = require('./imageGenerator');
 const videoComposer = require('./videoComposer');
@@ -45,7 +46,22 @@ async function main() {
 
     try {
         const script = await fs.readFile(scriptPath, 'utf8');
-        const paragraphs = script.split(/\n\s*\n/);
+
+        const md = new MarkdownIt();
+        const tokens = md.parse(script, {});
+
+        // console.log('Tokens:', tokens);
+
+        const paragraphs = [];
+        for (let i = 0; i < tokens.length; i++) {
+            const token = tokens[i];
+
+            if (token.type === 'paragraph_open') {
+                const content = tokens[i + 1].content;
+                paragraphs.push(content);
+            }
+        }
+
         console.log(`🏁 Found ${paragraphs.length} paragraphs to process`);
         await processParagraphs(paragraphs);
     } catch (error) {

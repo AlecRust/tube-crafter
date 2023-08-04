@@ -9,70 +9,61 @@ const textToSpeech = require('./textToSpeech');
 const imageGenerator = require('./imageGenerator');
 const videoComposer = require('./videoComposer');
 
-const argv = yargs(hideBin(process.argv))
-    .command('$0 <inputFile>', 'Process the input file', (yargs) => {
-        yargs.positional('inputFile', {
-            describe: 'Path to the input file',
-            type: 'string',
-        });
-    })
-    .demandCommand(1, 'You need to provide an input file')
-    .help()
-    .argv;
+async function parseInputFile(inputFilePath) {
+    try {
+        const input = await fs.readFile(inputFilePath, 'utf8');
+        const md = new MarkdownIt();
+        const tokens = md.parse(input, {});
+        const paragraphTokens = tokens.reduce((paragraphs, token, i) => {
+            if (token.type === 'paragraph_open') {
+                paragraphs.push(tokens[i + 1].content);
+            }
+            return paragraphs;
+        }, []);
+        console.log(`📝 Found ${paragraphTokens.length} paragraphs to process`);
+        return paragraphTokens;
 
-const inputFile = path.resolve(argv.inputFile);
-
-async function processParagraph(paragraph, outputDir, i) {
-  try {
-      const audioPath = path.join(outputDir, 'audio', `${i}.mp3`);
-      const imagePath = path.join(outputDir, 'images', `${i}.jpg`);
-
-      await Promise.all([
-          textToSpeech(paragraph, audioPath),
-          imageGenerator(paragraph, imagePath),
-      ]);
-  } catch (error) {
-      console.error(`An error occurred while processing paragraph ${i}: ${error.message}`);
-      process.exit(1);
-  }
+    } catch (error) {
+        throw new Error(`Failed to process input file: ${error.message}`);
+    }
 }
 
 async function processParagraphs(paragraphs, outputDir) {
-  const processingPromises = paragraphs.map((paragraph, i) => processParagraph(paragraph, outputDir, i));
-  await Promise.all(processingPromises);
-}
-
-function getParagraphsFromTokens(tokens) {
-    return tokens.reduce((paragraphs, token, i) => {
-        if (token.type === 'paragraph_open') {
-            paragraphs.push(tokens[i + 1].content);
-        }
-        return paragraphs;
-    }, []);
+    try {
+        const processingPromises = paragraphs.map((paragraph, i) => {
+            const audioPath = path.join(outputDir, 'audio', `${i}.mp3`);
+            const imagePath = path.join(outputDir, 'images', `${i}.jpg`);
+            return Promise.all([
+                textToSpeech(paragraph, audioPath),
+                imageGenerator(paragraph, imagePath),
+            ]);
+        });
+        await Promise.all(processingPromises);
+    } catch (error) {
+        throw new Error(`Failed to process paragraphs: ${error.message}`);
+    }
 }
 
 async function main() {
-    if (!fs.existsSync(inputFile)) {
-        console.error(`The input file ${inputFile} does not exist`);
-        process.exit(1);
-    }
+    const argv = yargs(hideBin(process.argv))
+        .command('$0 <inputFile>', 'Process the input file', (yargs) => {
+            yargs.positional('inputFile', {
+                describe: 'Path to the input file',
+                type: 'string',
+            });
+        })
+        .demandCommand(1, 'You need to provide an input file')
+        .help()
+        .argv;
+
+    const inputFile = path.resolve(argv.inputFile);
 
     try {
-        const input = await fs.readFile(inputFile, 'utf8');
-
-        const md = new MarkdownIt();
-        let tokens;
-        try {
-            tokens = md.parse(input, {});
-        } catch (error) {
-            console.error(`Failed to parse input file as Markdown: ${error.message}`);
-            process.exit(1);
+        if (!await fs.pathExists(inputFile)) {
+            throw new Error(`The input file ${inputFile} does not exist`);
         }
 
-        const paragraphs = getParagraphsFromTokens(tokens);
-
-        console.log(`🏁 Found ${paragraphs.length} paragraphs to process`);
-
+        const paragraphs = await parseInputFile(inputFile);
         const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
         const outputDir = `./output/${timestamp}`;
 
@@ -86,7 +77,7 @@ async function main() {
           outputDir,
         );
     } catch (error) {
-        console.error(`An error occurred while processing the input file: ${error.message}`);
+        console.error(`An error occurred: ${error.message}`);
         process.exit(1);
     }
 }

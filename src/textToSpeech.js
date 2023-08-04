@@ -24,7 +24,7 @@ const convertTextToSpeech = async (text, output) => {
 
         // Write the audio data to the output file
         await fs.outputFile(output, response.audioContent, 'binary');
-        console.log(`✅ MP3 saved to: ${output}`);
+        console.log(`✅ MP3 saved to: ${output}\n`);
     } catch (error) {
         console.error(`Failed to synthesize speech`, error);
         throw error; // Propagate the error to the caller

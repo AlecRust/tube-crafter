@@ -22,20 +22,16 @@ const argv = yargs(hideBin(process.argv))
 
 const scriptPath = path.resolve(argv.script);
 
-async function processParagraphs(paragraphs) {
-    for (let i = 0; i < paragraphs.length; i++) {
-      const paragraph = paragraphs[i];
-      await Promise.all([
-          textToSpeech(paragraph, `./output/audio/${i}.mp3`),
-          imageGenerator(paragraph, `./output/images/${i}.jpg`),
+async function processParagraphs(paragraphs, outputDir) {
+  const processingPromises = paragraphs.map((paragraph, i) => {
+      const audioPath = path.join(outputDir, 'audio', `${i}.mp3`);
+      const imagePath = path.join(outputDir, 'images', `${i}.jpg`);
+      return Promise.all([
+          textToSpeech(paragraph, audioPath),
+          imageGenerator(paragraph, imagePath),
       ]);
-    }
-
-    await videoComposer(
-      './output/audio',
-      './output/images',
-      `./output/video-${new Date().toISOString()}.mp4`,
-    );
+  });
+  return Promise.all(processingPromises);
 }
 
 async function main() {
@@ -63,7 +59,19 @@ async function main() {
         }
 
         console.log(`🏁 Found ${paragraphs.length} paragraphs to process`);
-        await processParagraphs(paragraphs);
+
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+        const outputDir = `./output/${timestamp}`;
+
+        // Create audio and image files for each paragraph
+        await processParagraphs(paragraphs, outputDir);
+
+        // Create a video from the audio and image files
+        await videoComposer(
+          path.join(outputDir, 'audio'),
+          path.join(outputDir, 'images'),
+          outputDir,
+        );
     } catch (error) {
         console.error(`An error occurred while processing the script: ${error.message}`);
         process.exit(1);

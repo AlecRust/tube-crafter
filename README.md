@@ -1,9 +1,10 @@
 # tube-crafter
 
-Turn a script for a video, into a video.
+Generate a video from a topic or a script you already have.
 
 ## Usage
 
 ```sh
-tube-crafter my-video-script.md
+tube-crafter --topic "red squirrels"
+tube-crafter --script my-script.md
 ```

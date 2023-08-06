@@ -11,40 +11,32 @@ const audioGenerator = require('./audioGenerator');
 const videoGenerator = require('./videoGenerator');
 
 async function parseInputFile(inputFilePath) {
-    try {
-        const input = await fs.readFile(inputFilePath, 'utf8');
-        const md = new MarkdownIt();
-        const tokens = md.parse(input, {});
-        return tokens;
-    } catch (error) {
-        throw new Error(`Failed to process input file: ${error.message}`);
-    }
+    const input = await fs.readFile(inputFilePath, 'utf8');
+    const md = new MarkdownIt();
+    return md.parse(input, {});
 }
 
 async function processTextTokens(tokens, outputDir) {
-    try {
-        const textLines = tokens.reduce((lines, token, i) => {
-            if (token.type === 'paragraph_open' || token.type === 'heading_open') {
-                lines.push(tokens[i + 1].content);
-            }
-            return lines;
-        }, []);
+    const textLines = tokens.reduce((lines, token, i) => {
+        if (token.type === 'paragraph_open' || token.type === 'heading_open') {
+            lines.push(tokens[i + 1].content);
+        }
+        return lines;
+    }, []);
 
-        console.log(`Found ${textLines.length} text lines to process`);
+    console.log(`Found ${textLines.length} text lines to process`);
 
-        const processingPromises = textLines.map((line, i) => {
-            const audioPath = path.join(outputDir, 'audio', `${i}.mp3`);
-            const imagePath = path.join(outputDir, 'images', `${i}.jpg`);
-            return Promise.all([
-                imageGenerator(line, imagePath),
-                audioGenerator(line, audioPath),
-            ]);
-        });
-        await Promise.all(processingPromises);
-        console.log(`✅ Image and MP3 created for ${textLines.length} text lines\n`);
-    } catch (error) {
-        throw new Error(`Failed to process text tokens: ${error.message}`);
-    }
+    const processingPromises = textLines.map((line, i) => {
+        const audioPath = path.join(outputDir, 'audio', `${i}.mp3`);
+        const imagePath = path.join(outputDir, 'images', `${i}.jpg`);
+        return Promise.all([
+            imageGenerator(line, imagePath),
+            audioGenerator(line, audioPath),
+        ]);
+    });
+
+    await Promise.all(processingPromises);
+    console.log(`✅ Image and MP3 created for ${textLines.length} text lines\n`);
 }
 
 async function main() {
@@ -69,9 +61,9 @@ async function main() {
         .help()
         .argv;
 
-    let tokens;
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const outputDir = `./output/${timestamp}`;
+    const outputDir = path.resolve(`./output/${timestamp}`);
+    let tokens;
 
     try {
         if (argv.script) {

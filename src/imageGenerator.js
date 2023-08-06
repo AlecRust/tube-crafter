@@ -8,7 +8,7 @@ const configuration = new Configuration({
 
 const openai = new OpenAIApi(configuration);
 
-const generateImageFromText = async (text, output) => {
+const generateImageFromText = async (text, outputPath) => {
   try {
     const gpt3Response = await openai.createChatCompletion({
       model: "gpt-3.5-turbo",
@@ -49,8 +49,8 @@ const generateImageFromText = async (text, output) => {
     const imageUrl = dallEResponse.data.data[0].url;
     const imageResponse = await axios.get(imageUrl, { responseType: 'arraybuffer' });
 
-    await fs.outputFile(output, Buffer.from(imageResponse.data, 'binary'));
-    console.log(`✅ Image saved to: ${output}\n`);
+    await fs.outputFile(outputPath, Buffer.from(imageResponse.data, 'binary'));
+    console.log(`✅ Image saved to: ${outputPath}\n`);
   } catch (error) {
     console.error(`Failed to generate image from text: ${error.message}`);
     throw error; // Propagate the error to the caller

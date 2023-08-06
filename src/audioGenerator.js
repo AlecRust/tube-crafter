@@ -1,7 +1,7 @@
 const textToSpeech = require('@google-cloud/text-to-speech');
 const fs = require('fs-extra');
 
-const convertTextToSpeech = async (text, output) => {
+const convertTextToSpeech = async (text, outputPath) => {
     try {
         const client = new textToSpeech.TextToSpeechClient();
 
@@ -23,8 +23,8 @@ const convertTextToSpeech = async (text, output) => {
         const [response] = await client.synthesizeSpeech(request);
 
         // Write the audio data to the output file
-        await fs.outputFile(output, response.audioContent, 'binary');
-        console.log(`✅ MP3 saved to: ${output}\n`);
+        await fs.outputFile(outputPath, response.audioContent, 'binary');
+        console.log(`✅ MP3 saved to: ${outputPath}\n`);
     } catch (error) {
         console.error(`Failed to synthesize speech`, error);
         throw error; // Propagate the error to the caller

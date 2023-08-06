@@ -40,8 +40,8 @@ const createVideo = async (imageFile, audioFile, videoOutput) => {
   });
 }
 
-const concatenateVideos = async (videoFiles, output) => {
-  console.log(`Concatenating videos to ${output}...`);
+const concatenateVideos = async (videoFiles, outputPath) => {
+  console.log(`Concatenating videos to ${outputPath}...`);
   return new Promise((resolve, reject) => {
     let command = ffmpeg();
     // Add each video file as a separate input
@@ -62,17 +62,18 @@ const concatenateVideos = async (videoFiles, output) => {
       ])
       .on('error', reject)
       .on('end', resolve)
-      .save(output);
+      .save(outputPath);
   });
 }
 
-const createAndConcatenateVideos = async (audioDir, imageDir, outputDir) => {
+const createAndConcatenateVideos = async (audioDir, imageDir, outputPath) => {
+  console.log('outputPath', outputPath);
   const audioFiles = (await fs.readdir(audioDir)).sort(naturalSort()).map(file => path.join(audioDir, file));
   const imageFiles = (await fs.readdir(imageDir)).sort(naturalSort()).map(file => path.join(imageDir, file));
 
   console.log(`🎥 Creating ${audioFiles.length} videos...`);
 
-  const videoOutputDirectory = path.join(outputDir, 'video');
+  const videoOutputDirectory = path.join(path.dirname(outputPath), 'video');
   fs.ensureDirSync(videoOutputDirectory);
 
   const videoFiles = await Promise.all(audioFiles.map(async (audioFile, i) => {
@@ -82,9 +83,8 @@ const createAndConcatenateVideos = async (audioDir, imageDir, outputDir) => {
     return videoOutput;
   }));
 
-  const finalVideoOutput = path.join(outputDir, `output.mp4`);
-  await concatenateVideos(videoFiles, finalVideoOutput);
-  console.log(`💫 Final video saved to: ${finalVideoOutput}`);
+  await concatenateVideos(videoFiles, outputPath);
+  console.log(`💫 Final video saved to: ${outputPath}`);
 };
 
 module.exports = createAndConcatenateVideos;

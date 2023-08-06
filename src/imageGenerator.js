@@ -8,7 +8,7 @@ const configuration = new Configuration({
 
 const openai = new OpenAIApi(configuration);
 
-const generateImageFromText = async (text, outputPath) => {
+const generateImageFromText = async (line, outputPath) => {
   try {
     const gpt3Response = await openai.createChatCompletion({
       model: "gpt-3.5-turbo",
@@ -24,7 +24,7 @@ const generateImageFromText = async (text, outputPath) => {
           // "content": `Give me a short (less than a dozen words) description of an image that best describes this paragraph:\n\n${text}`
           // "content": `Describe in less than a dozen words a simple image that represents this text:\n\n${text}`
           // "content": `Give me a short and simple description of an image that represents this text:\n\n${text}`
-          "content": `Respond with a short (less than a dozen words) "alt text" of an image that represents this text:\n\n${text}`
+          "content": `Respond with a short (less than a dozen words) "alt text" of an image that represents this text:\n\n${line.content}`
         }
       ]
     });
@@ -34,7 +34,8 @@ const generateImageFromText = async (text, outputPath) => {
     console.log(`${paragraphImagePrompt}\n`);
 
     const createImageResponse = await openai.createImage({
-      prompt: paragraphImagePrompt,
+      // prompt: paragraphImagePrompt,
+      prompt: `An expressive oil painting of ${paragraphImagePrompt}`,
       n: 1,
       size: "1024x1024",
     });

@@ -10,17 +10,10 @@ const audioGenerator = require('./audioGenerator');
 const videoGenerator = require('./videoGenerator');
 const { parseInputFile } = require('./utils');
 
-async function processTextTokens(tokens, outputDir) {
-    const textLines = tokens.reduce((lines, token, i) => {
-        if (token.type === 'paragraph_open' || token.type === 'heading_open') {
-            lines.push(tokens[i + 1].content);
-        }
-        return lines;
-    }, []);
+async function processTextLines(lines, outputDir) {
+    console.log(`Found ${lines.length} text lines to process`);
 
-    console.log(`Found ${textLines.length} text lines to process`);
-
-    const processingPromises = textLines.map((line, i) => {
+    const processingPromises = lines.map((line, i) => {
         const audioPath = path.join(outputDir, 'audio', `${i}.mp3`);
         const imagePath = path.join(outputDir, 'images', `${i}.jpg`);
         return Promise.all([
@@ -30,7 +23,7 @@ async function processTextTokens(tokens, outputDir) {
     });
 
     await Promise.all(processingPromises);
-    console.log(`✅ Image and MP3 created for ${textLines.length} text lines\n`);
+    console.log(`✅ Image and MP3 created for ${lines.length} text lines\n`);
 }
 
 async function main() {
@@ -57,7 +50,7 @@ async function main() {
 
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     const outputDir = path.resolve(`./output/${timestamp}`);
-    let tokens;
+    let lines;
 
     try {
         if (argv.script) {
@@ -65,7 +58,7 @@ async function main() {
             if (!await fs.pathExists(inputFile)) {
                 throw new Error(`The input file ${inputFile} does not exist`);
             }
-            tokens = await parseInputFile(inputFile);
+            lines = await parseInputFile(inputFile);
         } else {
             const generatedScriptPath = await scriptGenerator(
               argv.topic,
@@ -74,11 +67,11 @@ async function main() {
             if (!await fs.pathExists(generatedScriptPath)) {
                 throw new Error(`Failed to generate script for topic: ${argv.topic}`);
             }
-            tokens = await parseInputFile(generatedScriptPath);
+            lines = await parseInputFile(generatedScriptPath);
         }
 
         // Create audio and image files for each text line
-        await processTextTokens(tokens, outputDir);
+        await processTextLines(lines, outputDir);
 
         // Create a video from the audio and image files
         await videoGenerator(

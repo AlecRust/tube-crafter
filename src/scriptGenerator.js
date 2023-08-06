@@ -17,7 +17,7 @@ const generateScriptForTopic = async (topic, outputPath) => {
       messages: [
         {
           "role": "system",
-          "content": "Reply in Markdown format with only a main heading and paragraphs (that aren't too long)."
+          "content": "Reply in raw Markdown format with only a main heading and paragraphs (that aren't too long)."
         },
         {
           "role": "user",

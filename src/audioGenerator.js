@@ -1,12 +1,12 @@
 const textToSpeech = require('@google-cloud/text-to-speech');
 const fs = require('fs-extra');
 
-const convertTextToSpeech = async (text, outputPath) => {
+const convertTextToSpeech = async (line, outputPath) => {
     try {
         const client = new textToSpeech.TextToSpeechClient();
 
         const request = {
-            input: { text: text },
+            input: { text: line.content },
             voice: { languageCode: 'en-GB', name: 'en-GB-Neural2-D' },
             audioConfig: {
                 effectsProfileId: ['small-bluetooth-speaker-class-device'], // Apply audio effects
@@ -17,7 +17,7 @@ const convertTextToSpeech = async (text, outputPath) => {
         };
 
         console.log(`🔉 Creating MP3 of text:`);
-        console.log(`${text}\n`);
+        console.log(`${line.content}\n`);
 
         // Make the Text-to-Speech request
         const [response] = await client.synthesizeSpeech(request);

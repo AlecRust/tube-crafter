@@ -4,17 +4,11 @@ const yargs = require('yargs/yargs');
 const { hideBin } = require('yargs/helpers');
 const fs = require('fs-extra');
 const path = require('path');
-const MarkdownIt = require('markdown-it');
 const scriptGenerator = require('./scriptGenerator');
 const imageGenerator = require('./imageGenerator');
 const audioGenerator = require('./audioGenerator');
 const videoGenerator = require('./videoGenerator');
-
-async function parseInputFile(inputFilePath) {
-    const input = await fs.readFile(inputFilePath, 'utf8');
-    const md = new MarkdownIt();
-    return md.parse(input, {});
-}
+const { parseInputFile } = require('./utils');
 
 async function processTextTokens(tokens, outputDir) {
     const textLines = tokens.reduce((lines, token, i) => {

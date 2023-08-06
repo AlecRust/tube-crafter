@@ -17,21 +17,14 @@ const generateImageFromText = async (text, outputPath) => {
         //   "role": "system",
         //   "content": "Respond with only the information asked, no e.g. prefix or suffix."
         // },
-        // {
-        //   "role": "user",
-        //   "content": `Respond with short 'alt text' for an image that best represents this paragraph:\n\n${text}`
-        // }
-        // {
-        //   "role": "user",
-        //   "content": `Give me a short description of an image that would be a suitable backdrop when narrating this paragraph:\n\n${text}`
-        // }
-        // {
-        //   "role": "user",
-        //   "content": `Give me a short (less than a dozen words) description of an image that best describes this paragraph:\n\n${text}`
-        // }
         {
           "role": "user",
-          "content": `Describe in less than a dozen words a simple image that represents this text:\n\n${text}`
+          // "content": `Respond with short 'alt text' for an image that best represents this paragraph:\n\n${text}`
+          // "content": `Give me a short description of an image that would be a suitable backdrop when narrating this paragraph:\n\n${text}`
+          // "content": `Give me a short (less than a dozen words) description of an image that best describes this paragraph:\n\n${text}`
+          // "content": `Describe in less than a dozen words a simple image that represents this text:\n\n${text}`
+          // "content": `Give me a short and simple description of an image that represents this text:\n\n${text}`
+          "content": `Respond with a short (less than a dozen words) "alt text" of an image that represents this text:\n\n${text}`
         }
       ]
     });

@@ -2,21 +2,11 @@ const ffmpeg = require('fluent-ffmpeg');
 const fs = require('fs-extra');
 const path = require('path');
 const naturalSort = require('natural-sort');
-
-const getAudioDurationInSeconds = async (audioFile) => {
-  return new Promise((resolve, reject) => {
-    ffmpeg.ffprobe(audioFile, function(err, metadata) {
-      if (err) {
-        reject(err);
-      }
-      resolve(metadata.format.duration);
-    });
-  });
-}
+const { getAudioDuration } = require('./utils');
 
 const createVideo = async (imageFile, audioFile, videoOutput) => {
   console.log(`🎥 Creating video from ${imageFile} and ${audioFile}...`);
-  const audioDuration = await getAudioDurationInSeconds(audioFile);
+  const audioDuration = await getAudioDuration(audioFile);
   const additionalSeconds = 0;
 
   return new Promise((resolve, reject) => {

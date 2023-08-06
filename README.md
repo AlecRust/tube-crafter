@@ -1,9 +1,9 @@
-# script-to-video
+# tube-crafter
 
 Turn a script for a video, into a video.
 
 ## Usage
 
 ```sh
-script-to-video my-video-script.md
+tube-crafter my-video-script.md
 ```

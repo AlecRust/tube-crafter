@@ -1,12 +1,12 @@
 {
-  "name": "script-to-video",
+  "name": "tube-crafter",
   "version": "1.0.0",
   "description": "Turn a video script into a video.",
   "author": "Alec Rust <me@alecrust.com>",
   "license": "ISC",
   "main": "src/index.js",
   "bin": {
-    "script-to-video": "src/index.js"
+    "tube-crafter": "src/index.js"
   },
   "scripts": {
     "start": "node src/index.js",

@@ -40,20 +40,20 @@ const generateImageFromText = async (text, outputPath) => {
     console.log('🖼️ Image prompt describing paragraph:');
     console.log(`${paragraphImagePrompt}\n`);
 
-    const dallEResponse = await openai.createImage({
+    const createImageResponse = await openai.createImage({
       prompt: paragraphImagePrompt,
       n: 1,
       size: "1024x1024",
     });
 
-    const imageUrl = dallEResponse.data.data[0].url;
+    const imageUrl = createImageResponse.data.data[0].url;
     const imageResponse = await axios.get(imageUrl, { responseType: 'arraybuffer' });
 
     await fs.outputFile(outputPath, Buffer.from(imageResponse.data, 'binary'));
     console.log(`✅ Image saved to: ${outputPath}\n`);
   } catch (error) {
     console.error(`Failed to generate image from text: ${error.message}`);
-    throw error; // Propagate the error to the caller
+    throw error;
   }
 };
 

@@ -5,15 +5,15 @@ const convertTextToSpeech = async (text, outputPath) => {
     try {
         const client = new textToSpeech.TextToSpeechClient();
 
-        // Prepare the SSML text with the desired rate and pitch
-        const ssmlText = `<speak><prosody rate="medium" pitch="low">${text}</prosody></speak>`;
-
         const request = {
-            input: { ssml: ssmlText },
-            // Specify the desired accent and gender of the voice
-            // 'en-GB-Standard-B' is a male voice
-            voice: { languageCode: 'en-GB', name: 'en-GB-Standard-D', ssmlGender: 'MALE' },
-            audioConfig: { audioEncoding: 'MP3' },
+            input: { text: text },
+            voice: { languageCode: 'en-GB', name: 'en-GB-Neural2-D' },
+            audioConfig: {
+                effectsProfileId: ['small-bluetooth-speaker-class-device'], // Apply audio effects
+                pitch: 0, // Set pitch to 0
+                speakingRate: 1, // Set speaking rate to 1
+                audioEncoding: 'MP3', // Use MP3 encoding
+            },
         };
 
         console.log(`🔉 Creating MP3 of text:`);
@@ -27,7 +27,7 @@ const convertTextToSpeech = async (text, outputPath) => {
         console.log(`✅ MP3 saved to: ${outputPath}\n`);
     } catch (error) {
         console.error(`Failed to synthesize speech`, error);
-        throw error; // Propagate the error to the caller
+        throw error;
     }
 };
 

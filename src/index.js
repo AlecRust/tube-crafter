@@ -41,6 +41,7 @@ async function processTextTokens(tokens, outputDir) {
             ]);
         });
         await Promise.all(processingPromises);
+        console.log(`✅ Image and MP3 created for ${textLines.length} text lines\n`);
     } catch (error) {
         throw new Error(`Failed to process text tokens: ${error.message}`);
     }

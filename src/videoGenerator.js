@@ -79,9 +79,9 @@ const createAndConcatenateVideos = async (audioDir, imageDir, outputPath) => {
   const videoFiles = await Promise.all(audioFiles.map(async (audioFile, i) => {
     const videoOutput = path.join(videoOutputDirectory, `${i}.mp4`);
     await createVideo(imageFiles[i], audioFile, videoOutput);
-    console.log(`✅ Video ${i} saved to: ${videoOutput}\n`);
     return videoOutput;
   }));
+  console.log(`✅ Created ${videoFiles.length} videos`);
 
   await concatenateVideos(videoFiles, outputPath);
   console.log(`💫 Final video saved to: ${outputPath}`);

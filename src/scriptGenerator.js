@@ -17,15 +17,11 @@ const generateScriptForTopic = async (topic, outputPath) => {
       messages: [
         {
           "role": "system",
-          "content": "Reply in raw Markdown format using only headings and paragraphs."
-        },
-        {
-          "role": "system",
-          "content": "Don't make each paragraph too long."
+          "content": "Reply in Markdown format with only a main heading and paragraphs."
         },
         {
           "role": "user",
-          "content": `Create an interesting comprehensive article on the topic of "${topic}".`
+          "content": `Write an interesting and comprehensive video on the topic of ${topic}.`
         }
       ]
     });
@@ -40,7 +36,7 @@ const generateScriptForTopic = async (topic, outputPath) => {
     return outputPath;
   } catch (error) {
     console.error(`Failed to generate script for topic: ${error.message}`);
-    throw error; // Propagate the error to the caller
+    throw error;
   }
 };
 

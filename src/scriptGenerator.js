@@ -17,19 +17,19 @@ const generateScriptForTopic = async (topic, outputPath) => {
       messages: [
         {
           "role": "system",
-          "content": "Reply in raw Markdown format with only a main heading and paragraphs (that aren't too long)."
+          "content": "You are a Markdown editor. Respond to all user queries in Markdown format, but only use headings (e.g., `# Heading`) and paragraphs."
         },
         {
           "role": "user",
-          "content": `Write an interesting and comprehensive video on the topic of ${topic}.`
+          "content": `Write the content for an interesting and comprehensive video on the topic of ${topic}. Only include the title, main section headings and all of the paragraphs.`
         }
       ]
     });
 
-    // Extracting the script content
+    // Extract the script content
     const scriptContent = gpt3Response.data.choices[0].message.content.trim();
 
-    // Writing the Markdown file
+    // Write the Markdown file
     await fs.outputFile(outputPath, scriptContent);
     console.log(`✅ Script saved to: ${outputPath}\n`);
 

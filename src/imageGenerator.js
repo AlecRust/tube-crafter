@@ -1,6 +1,8 @@
 const axios = require('axios');
 const fs = require('fs-extra');
 const { Configuration, OpenAIApi } = require("openai");
+const { createCanvas, loadImage } = require('canvas');
+const { calculateAvgColor } = require('./utils');
 
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
@@ -8,34 +10,65 @@ const configuration = new Configuration({
 
 const openai = new OpenAIApi(configuration);
 
+const generatePrompt = async (content) => {
+  const response = await openai.createChatCompletion({
+    model: "gpt-3.5-turbo",
+    messages: [
+      {
+        "role": "system",
+        "content": "You are ChatGPT, and your task is to distill the user's text into a brief and concise image prompt suitable for DALL-E, a model that generates images from textual descriptions. Summarize the essence of the user's text in less than a dozen words, in a way that would guide the creation of an image."
+      },
+      {
+        "role": "user",
+        "content": content
+      }
+    ]
+  });
+  return response.data.choices[0].message.content.trim();
+};
+
+const addHeadingToImage = async (imageBuffer, text) => {
+  const canvas = createCanvas(1024, 1024);
+  const ctx = canvas.getContext('2d');
+  const image = await loadImage(imageBuffer);
+  ctx.drawImage(image, 0, 0, 1024, 1024);
+
+  // Set text color based on the average color
+  const avgColor = calculateAvgColor(ctx.getImageData(256, 456, 512, 104));
+  ctx.fillStyle = avgColor > 128 ? '#000000' : '#FFFFFF';
+
+  // Set font and alignment
+  ctx.font = 'bold 48px sans-serif'; // Added "bold" to make the text bold
+  ctx.textAlign = 'center';
+
+  // Split and draw text
+  const words = text.split(' ');
+  let line = '', y = 512;
+  for (const word of words) {
+    const testLine = line + word + ' ';
+    if (ctx.measureText(testLine).width > 900) {
+      ctx.fillText(line, 512, y);
+      line = word + ' ';
+      y += 50; // Line height
+    } else {
+      line = testLine;
+    }
+  }
+  ctx.fillText(line, 512, y); // Draw remaining line
+
+  return canvas.toBuffer('image/png');
+};
+
+
 const generateImageFromText = async (line, outputPath) => {
   try {
-    const gpt3Response = await openai.createChatCompletion({
-      model: "gpt-3.5-turbo",
-      messages: [
-        // {
-        //   "role": "system",
-        //   "content": "Respond with only the information asked, no e.g. prefix or suffix."
-        // },
-        {
-          "role": "user",
-          // "content": `Respond with short 'alt text' for an image that best represents this paragraph:\n\n${text}`
-          // "content": `Give me a short description of an image that would be a suitable backdrop when narrating this paragraph:\n\n${text}`
-          // "content": `Give me a short (less than a dozen words) description of an image that best describes this paragraph:\n\n${text}`
-          // "content": `Describe in less than a dozen words a simple image that represents this text:\n\n${text}`
-          // "content": `Give me a short and simple description of an image that represents this text:\n\n${text}`
-          "content": `Respond with a short (less than a dozen words) "alt text" of an image that represents this text:\n\n${line.content}`
-        }
-      ]
-    });
+    const imagePrompt = await generatePrompt(line.content);
 
-    const paragraphImagePrompt = gpt3Response.data.choices[0].message.content.trim();
-    console.log('🖼️ Image prompt describing paragraph:');
-    console.log(`${paragraphImagePrompt}\n`);
+    console.log('🖼️ Image prompt:');
+    console.log(`${imagePrompt}\n`);
 
     const createImageResponse = await openai.createImage({
-      // prompt: paragraphImagePrompt,
-      prompt: `An expressive oil painting of ${paragraphImagePrompt}`,
+      prompt: imagePrompt,
       n: 1,
       size: "1024x1024",
     });
@@ -43,7 +76,13 @@ const generateImageFromText = async (line, outputPath) => {
     const imageUrl = createImageResponse.data.data[0].url;
     const imageResponse = await axios.get(imageUrl, { responseType: 'arraybuffer' });
 
-    await fs.outputFile(outputPath, Buffer.from(imageResponse.data, 'binary'));
+    let finalImageBuffer = imageResponse.data;
+
+    if (line.type === 'heading') {
+      finalImageBuffer = await addHeadingToImage(imageResponse.data, line.content);
+    }
+
+    await fs.outputFile(outputPath, Buffer.from(finalImageBuffer, 'binary'));
     console.log(`✅ Image saved to: ${outputPath}\n`);
   } catch (error) {
     console.error(`Failed to generate image from text: ${error.message}`);

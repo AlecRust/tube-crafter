@@ -20,6 +20,14 @@ const parseInputFile = async (inputFilePath) => {
   return lines;
 };
 
+const calculateAvgColor = (textAreaImageData) => {
+  let avgColor = 0;
+  for (let i = 0; i < textAreaImageData.data.length; i += 4) {
+    avgColor += textAreaImageData.data[i] + textAreaImageData.data[i + 1] + textAreaImageData.data[i + 2];
+  }
+  return avgColor / (3 * textAreaImageData.data.length / 4);
+};
+
 const getAudioDuration = async (audioFile) => {
   return new Promise((resolve, reject) => {
     ffmpeg.ffprobe(audioFile, function(err, metadata) {
@@ -31,4 +39,4 @@ const getAudioDuration = async (audioFile) => {
   });
 }
 
-module.exports = { parseInputFile, getAudioDuration };
+module.exports = { parseInputFile, calculateAvgColor, getAudioDuration };

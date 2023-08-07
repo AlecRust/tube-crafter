@@ -7,7 +7,7 @@ const generateScriptForTopic = async (
   openaiInstance = null,
 ) => {
   try {
-    console.log(`📝 Generating script for topic: ${topic}\n`)
+    console.log(`📝 Generating script for a video about ${topic}\n`)
 
     // Create OpenAI instance if not provided
     openaiInstance =
@@ -25,8 +25,7 @@ const generateScriptForTopic = async (
       messages: [
         {
           role: 'system',
-          content:
-            'You are a Markdown editor. Respond to all user queries in Markdown format, but only use headings (e.g., `# Heading`) and paragraphs.',
+          content: `You are a Markdown editor. Respond to all user queries in Markdown format, but only use headings (e.g., "# Heading") and relatively short paragraphs.`,
         },
         {
           role: 'user',

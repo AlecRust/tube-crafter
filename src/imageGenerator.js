@@ -105,7 +105,6 @@ const generateImageFromText = async (line, outputPath) => {
     })
 
     const imageUrl = createImageResponse.data.data[0].url
-    // console.log('🖼️ Image URL:', imageUrl);
     const imageResponse = await axios.get(imageUrl, {
       responseType: 'arraybuffer',
     })

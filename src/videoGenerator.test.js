@@ -1,8 +1,8 @@
-const ffmpeg = require('fluent-ffmpeg');
-const fs = require('fs-extra');
-const path = require('path');
-const utils = require('./utils');
-const createAndConcatenateVideos = require('./videoGenerator');
+const ffmpeg = require('fluent-ffmpeg')
+const fs = require('fs-extra')
+const path = require('path')
+const utils = require('./utils')
+const createAndConcatenateVideos = require('./videoGenerator')
 
 jest.mock('fluent-ffmpeg', () => {
   const mockFfmpeg = {
@@ -12,59 +12,61 @@ jest.mock('fluent-ffmpeg', () => {
     saveToFile: jest.fn().mockReturnThis(),
     save: jest.fn().mockReturnThis(),
     on: jest.fn().mockImplementation(function (event, handler) {
-      if (event === 'end') handler();
-      return this;
+      if (event === 'end') handler()
+      return this
     }),
-  };
-  return jest.fn(() => mockFfmpeg);
-});
+  }
+  return jest.fn(() => mockFfmpeg)
+})
 
 describe('videoGenerator', () => {
-  const audioDir = 'audio';
-  const imageDir = 'images';
-  const outputPath = 'output.mp4';
+  const audioDir = 'audio'
+  const imageDir = 'images'
+  const outputPath = 'output.mp4'
 
   // Mock console.log to suppress the log messages in the test output
   beforeAll(() => {
-    jest.spyOn(console, 'log').mockImplementation(() => {});
-  });
+    jest.spyOn(console, 'log').mockImplementation(() => {})
+  })
 
   afterAll(() => {
-    console.log.mockRestore(); // Restore the original console.log function
-  });
+    console.log.mockRestore() // Restore the original console.log function
+  })
 
   beforeEach(() => {
-    jest.clearAllMocks();
-  });
+    jest.clearAllMocks()
+  })
 
   afterEach(() => {
-    jest.clearAllMocks();
-  });
+    jest.clearAllMocks()
+  })
 
   it('should create and concatenate videos from images and audio files', async () => {
     // Mocking fs.readdir
-    jest.spyOn(fs, 'readdir').mockResolvedValue(['file1', 'file2']);
+    jest.spyOn(fs, 'readdir').mockResolvedValue(['file1', 'file2'])
     // Mocking fs.ensureDirSync
-    jest.spyOn(fs, 'ensureDirSync').mockImplementation(() => {});
+    jest.spyOn(fs, 'ensureDirSync').mockImplementation(() => {})
     // Mocking path.join
-    jest.spyOn(path, 'join').mockImplementation((a, b) => `${a}/${b}`);
+    jest.spyOn(path, 'join').mockImplementation((a, b) => `${a}/${b}`)
     // Mocking ffprobe call
     ffmpeg.ffprobe = jest.fn((audioFile, callback) => {
-      callback(null, { format: { duration: 5 } });
-    });
+      callback(null, { format: { duration: 5 } })
+    })
     // Mocking getAudioDuration
-    jest.spyOn(utils, 'getAudioDuration').mockImplementation(() => Promise.resolve(5));
+    jest
+      .spyOn(utils, 'getAudioDuration')
+      .mockImplementation(() => Promise.resolve(5))
 
-    await createAndConcatenateVideos(audioDir, imageDir, outputPath);
+    await createAndConcatenateVideos(audioDir, imageDir, outputPath)
 
     // You can add more specific expectations here based on your requirements
-    const mockFfmpegInstance = ffmpeg();
-    expect(fs.readdir).toHaveBeenCalledWith(audioDir);
-    expect(fs.readdir).toHaveBeenCalledWith(imageDir);
-    expect(fs.ensureDirSync).toHaveBeenCalled();
-    expect(mockFfmpegInstance.saveToFile).toHaveBeenCalled();
-    expect(mockFfmpegInstance.save).toHaveBeenCalled();
-  });
+    const mockFfmpegInstance = ffmpeg()
+    expect(fs.readdir).toHaveBeenCalledWith(audioDir)
+    expect(fs.readdir).toHaveBeenCalledWith(imageDir)
+    expect(fs.ensureDirSync).toHaveBeenCalled()
+    expect(mockFfmpegInstance.saveToFile).toHaveBeenCalled()
+    expect(mockFfmpegInstance.save).toHaveBeenCalled()
+  })
 
   // Add more tests for specific functionalities, edge cases, and error handling as needed
-});
+})

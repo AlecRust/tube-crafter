@@ -1,0 +1,5 @@
+overrides:
+  - files: "*.js"
+    options:
+      singleQuote: true
+      semi: false

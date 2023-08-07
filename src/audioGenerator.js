@@ -1,34 +1,34 @@
-const textToSpeech = require('@google-cloud/text-to-speech');
-const fs = require('fs-extra');
+const textToSpeech = require('@google-cloud/text-to-speech')
+const fs = require('fs-extra')
 
 const convertTextToSpeech = async (line, outputPath) => {
-    try {
-        const client = new textToSpeech.TextToSpeechClient();
+  try {
+    const client = new textToSpeech.TextToSpeechClient()
 
-        const request = {
-            input: { text: line.content },
-            voice: { languageCode: 'en-GB', name: 'en-GB-Neural2-D' },
-            audioConfig: {
-                effectsProfileId: ['small-bluetooth-speaker-class-device'], // Apply audio effects
-                pitch: 0, // Set pitch to 0
-                speakingRate: 1, // Set speaking rate to 1
-                audioEncoding: 'MP3', // Use MP3 encoding
-            },
-        };
-
-        console.log(`🔉 Creating MP3 of text:`);
-        console.log(`${line.content}\n`);
-
-        // Make the Text-to-Speech request
-        const [response] = await client.synthesizeSpeech(request);
-
-        // Write the audio data to the output file
-        await fs.outputFile(outputPath, response.audioContent, 'binary');
-        console.log(`✅ MP3 saved to: ${outputPath}\n`);
-    } catch (error) {
-        console.error(`Failed to synthesize speech`, error);
-        throw error;
+    const request = {
+      input: { text: line.content },
+      voice: { languageCode: 'en-GB', name: 'en-GB-Neural2-D' },
+      audioConfig: {
+        effectsProfileId: ['small-bluetooth-speaker-class-device'], // Apply audio effects
+        pitch: 0, // Set pitch to 0
+        speakingRate: 1, // Set speaking rate to 1
+        audioEncoding: 'MP3', // Use MP3 encoding
+      },
     }
-};
 
-module.exports = convertTextToSpeech;
+    console.log(`🔉 Creating MP3 of text:`)
+    console.log(`${line.content}\n`)
+
+    // Make the Text-to-Speech request
+    const [response] = await client.synthesizeSpeech(request)
+
+    // Write the audio data to the output file
+    await fs.outputFile(outputPath, response.audioContent, 'binary')
+    console.log(`✅ MP3 saved to: ${outputPath}\n`)
+  } catch (error) {
+    console.error(`Failed to synthesize speech`, error)
+    throw error
+  }
+}
+
+module.exports = convertTextToSpeech

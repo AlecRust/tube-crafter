@@ -1,8 +1,8 @@
-const convertTextToSpeech = require('./audioGenerator')
+const convertTextToSpeech = require('./convertTextToSpeech')
 const textToSpeech = require('@google-cloud/text-to-speech')
 const fs = require('fs-extra')
 
-describe('audioGenerator', () => {
+describe('convertTextToSpeech', () => {
   // Mock console.error and console.log to suppress the error message in the test output
   beforeAll(() => {
     jest.spyOn(console, 'error').mockImplementation(() => {})

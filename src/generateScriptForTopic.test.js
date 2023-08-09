@@ -1,9 +1,9 @@
-const scriptGenerator = require('./scriptGenerator')
+const generateScriptForTopic = require('./generateScriptForTopic')
 const fs = require('fs-extra')
 
 jest.mock('fs-extra')
 
-describe('scriptGenerator', () => {
+describe('generateScriptForTopic', () => {
   let openaiInstance
 
   // Suppress console.log and console.error
@@ -40,8 +40,13 @@ describe('scriptGenerator', () => {
       },
     })
 
-    // Call the scriptGenerator function with the topic and mock dependencies
-    await scriptGenerator(topic, outputPath, openaiInstance, fs.outputFile)
+    // Call the generateScriptForTopic function with the topic and mock dependencies
+    await generateScriptForTopic(
+      topic,
+      outputPath,
+      openaiInstance,
+      fs.outputFile,
+    )
 
     // Check if the content starts with the expected title
     expect(fs.outputFile).toHaveBeenCalledWith(
@@ -71,9 +76,9 @@ describe('scriptGenerator', () => {
       new Error('API Error'),
     )
 
-    // Call the scriptGenerator function with the topic and mock dependencies and expect an error
+    // Call the generateScriptForTopic function with the topic and mock dependencies and expect an error
     await expect(
-      scriptGenerator(topic, outputPath, openaiInstance, fs.outputFile),
+      generateScriptForTopic(topic, outputPath, openaiInstance, fs.outputFile),
     ).rejects.toThrow('API Error')
   })
 })

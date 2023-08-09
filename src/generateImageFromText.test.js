@@ -1,6 +1,6 @@
 const axios = require('axios')
 const fs = require('fs-extra')
-const generateImageFromText = require('./imageGenerator')
+const generateImageFromText = require('./generateImageFromText')
 const { createCanvas } = require('canvas')
 const { OpenAIApi, Configuration } = require('openai')
 
@@ -8,7 +8,7 @@ jest.mock('axios')
 jest.mock('fs-extra')
 jest.mock('openai')
 
-describe('imageGenerator', () => {
+describe('generateImageFromText', () => {
   let openaiInstance
 
   // Suppress console.log

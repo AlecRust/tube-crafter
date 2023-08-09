@@ -5,10 +5,10 @@ const { hideBin } = require('yargs/helpers')
 const fs = require('fs-extra')
 const path = require('path')
 const { Configuration, OpenAIApi } = require('openai')
-const scriptGenerator = require('./scriptGenerator')
-const imageGenerator = require('./imageGenerator')
-const audioGenerator = require('./audioGenerator')
-const videoGenerator = require('./videoGenerator')
+const generateScriptForTopic = require('./generateScriptForTopic')
+const generateImageFromText = require('./generateImageFromText')
+const convertTextToSpeech = require('./convertTextToSpeech')
+const createAndConcatenateVideos = require('./createAndConcatenateVideos')
 const { parseInputFile } = require('./utils')
 
 const openaiInstance = new OpenAIApi(
@@ -24,8 +24,8 @@ async function processTextLines(lines, outputDir) {
     const audioPath = path.join(outputDir, 'audio', `${i}.mp3`)
     const imagePath = path.join(outputDir, 'images', `${i}.jpg`)
     return Promise.all([
-      imageGenerator(line, imagePath, openaiInstance),
-      audioGenerator(line, audioPath),
+      generateImageFromText(line, imagePath, openaiInstance),
+      convertTextToSpeech(line, audioPath),
     ])
   })
 
@@ -66,7 +66,7 @@ async function main() {
       }
       lines = await parseInputFile(inputFile)
     } else {
-      const generatedScriptPath = await scriptGenerator(
+      const generatedScriptPath = await generateScriptForTopic(
         argv.topic,
         path.join(outputDir, 'script.md'),
         openaiInstance,
@@ -81,7 +81,7 @@ async function main() {
     await processTextLines(lines, outputDir)
 
     // Create a video from the audio and image files
-    await videoGenerator(
+    await createAndConcatenateVideos(
       path.join(outputDir, 'audio'),
       path.join(outputDir, 'images'),
       path.join(outputDir, 'output.mp4'),

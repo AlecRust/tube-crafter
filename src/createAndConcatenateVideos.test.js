@@ -2,7 +2,7 @@ const ffmpeg = require('fluent-ffmpeg')
 const fs = require('fs-extra')
 const path = require('path')
 const utils = require('./utils')
-const createAndConcatenateVideos = require('./videoGenerator')
+const createAndConcatenateVideos = require('./createAndConcatenateVideos')
 
 jest.mock('fluent-ffmpeg', () => {
   const mockFfmpeg = {
@@ -19,7 +19,7 @@ jest.mock('fluent-ffmpeg', () => {
   return jest.fn(() => mockFfmpeg)
 })
 
-describe('videoGenerator', () => {
+describe('createAndConcatenateVideos', () => {
   const audioDir = 'audio'
   const imageDir = 'images'
   const outputPath = 'output.mp4'

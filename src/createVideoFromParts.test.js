@@ -8,7 +8,7 @@ jest.mock('fluent-ffmpeg', () => {
     outputOptions: jest.fn().mockReturnThis(),
     format: jest.fn().mockReturnThis(),
     saveToFile: jest.fn().mockReturnThis(),
-    on: jest.fn().mockReturnThis(), // This should also return the object itself
+    on: jest.fn().mockReturnThis(),
   }
   const mockFfprobe = (file, callback) =>
     callback(null, { format: { duration: 5 } })

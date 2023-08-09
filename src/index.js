@@ -4,11 +4,18 @@ const yargs = require('yargs/yargs')
 const { hideBin } = require('yargs/helpers')
 const fs = require('fs-extra')
 const path = require('path')
+const { Configuration, OpenAIApi } = require('openai')
 const scriptGenerator = require('./scriptGenerator')
 const imageGenerator = require('./imageGenerator')
 const audioGenerator = require('./audioGenerator')
 const videoGenerator = require('./videoGenerator')
 const { parseInputFile } = require('./utils')
+
+const openaiInstance = new OpenAIApi(
+  new Configuration({
+    apiKey: process.env.OPENAI_API_KEY,
+  }),
+)
 
 async function processTextLines(lines, outputDir) {
   console.log(`Found ${lines.length} text lines to process`)
@@ -17,7 +24,7 @@ async function processTextLines(lines, outputDir) {
     const audioPath = path.join(outputDir, 'audio', `${i}.mp3`)
     const imagePath = path.join(outputDir, 'images', `${i}.jpg`)
     return Promise.all([
-      imageGenerator(line, imagePath),
+      imageGenerator(line, imagePath, openaiInstance),
       audioGenerator(line, audioPath),
     ])
   })
@@ -62,6 +69,7 @@ async function main() {
       const generatedScriptPath = await scriptGenerator(
         argv.topic,
         path.join(outputDir, 'script.md'),
+        openaiInstance,
       )
       if (!(await fs.pathExists(generatedScriptPath))) {
         throw new Error(`Failed to generate script for topic: ${argv.topic}`)

@@ -1,26 +1,10 @@
 const fs = require('fs-extra')
-const { Configuration, OpenAIApi } = require('openai')
 
-const generateScriptForTopic = async (
-  topic,
-  outputPath,
-  openaiInstance = null,
-) => {
+const generateScriptForTopic = async (topic, outputPath, openaiInstance) => {
   try {
     console.log(`📝 Generating script for a video about ${topic}\n`)
 
-    // Create OpenAI instance if not provided
-    openaiInstance =
-      openaiInstance ||
-      (() => {
-        const configuration = new Configuration({
-          apiKey: process.env.OPENAI_API_KEY,
-        })
-        return new OpenAIApi(configuration)
-      })()
-
     const gpt3Response = await openaiInstance.createChatCompletion({
-      // TODO: Use GPT-4 instead?
       model: 'gpt-3.5-turbo',
       messages: [
         {
@@ -29,7 +13,7 @@ const generateScriptForTopic = async (
         },
         {
           role: 'user',
-          content: `Write the content for an interesting and comprehensive video on the topic of ${topic}. Only include the title, main section headings and all of the paragraphs.`,
+          content: `Write the content for an interesting, detailed and educational video on the topic of ${topic}. Only include the title, main section headings and all of the paragraphs.`,
         },
       ],
     })

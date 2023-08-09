@@ -1,13 +1,8 @@
 const axios = require('axios')
 const fs = require('fs-extra')
-const { Configuration, OpenAIApi } = require('openai')
 const { createCanvas, loadImage } = require('canvas')
 const { calculateAvgColor } = require('./utils')
 
-const configuration = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY,
-})
-const openai = new OpenAIApi(configuration)
 const targetWidth = 1920
 const targetHeight = 1080
 
@@ -39,8 +34,8 @@ const cropAndScaleImage = async (imageBuffer) => {
   return canvas.toBuffer('image/png')
 }
 
-const generatePrompt = async (content) => {
-  const response = await openai.createChatCompletion({
+const generatePrompt = async (content, openaiInstance) => {
+  const response = await openaiInstance.createChatCompletion({
     model: 'gpt-3.5-turbo',
     messages: [
       {
@@ -93,12 +88,12 @@ const addHeadingToImage = async (imageBuffer, text) => {
   return canvas.toBuffer('image/png')
 }
 
-const generateImageFromText = async (line, outputPath) => {
+const generateImageFromText = async (line, outputPath, openaiInstance) => {
   try {
-    const imagePrompt = await generatePrompt(line.content)
+    const imagePrompt = await generatePrompt(line.content, openaiInstance)
     console.log('🖼️ Image prompt:', imagePrompt)
 
-    const createImageResponse = await openai.createImage({
+    const createImageResponse = await openaiInstance.createImage({
       prompt: `An illustration of ${imagePrompt}`,
       n: 1,
       size: '1024x1024',

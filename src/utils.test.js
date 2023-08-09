@@ -6,7 +6,6 @@ const {
 const fs = require('fs-extra')
 const ffmpeg = require('fluent-ffmpeg')
 
-// Mocking dependencies
 jest.mock('fluent-ffmpeg')
 jest.mock('fs-extra')
 

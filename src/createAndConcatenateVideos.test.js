@@ -24,13 +24,14 @@ describe('createAndConcatenateVideos', () => {
   const imageDir = 'images'
   const outputPath = 'output.mp4'
 
-  // Mock console.log to suppress the log messages in the test output
+  // Suppress console.log
   beforeAll(() => {
     jest.spyOn(console, 'log').mockImplementation(() => {})
   })
 
+  // Restore console.log
   afterAll(() => {
-    console.log.mockRestore() // Restore the original console.log function
+    console.log.mockRestore()
   })
 
   beforeEach(() => {
@@ -59,7 +60,6 @@ describe('createAndConcatenateVideos', () => {
 
     await createAndConcatenateVideos(audioDir, imageDir, outputPath)
 
-    // You can add more specific expectations here based on your requirements
     const mockFfmpegInstance = ffmpeg()
     expect(fs.readdir).toHaveBeenCalledWith(audioDir)
     expect(fs.readdir).toHaveBeenCalledWith(imageDir)
@@ -67,6 +67,4 @@ describe('createAndConcatenateVideos', () => {
     expect(mockFfmpegInstance.saveToFile).toHaveBeenCalled()
     expect(mockFfmpegInstance.save).toHaveBeenCalled()
   })
-
-  // Add more tests for specific functionalities, edge cases, and error handling as needed
 })

@@ -19,8 +19,14 @@ describe('generateScriptForTopic', () => {
   })
 
   beforeEach(() => {
-    // Create a mock OpenAI instance with createChatCompletion method
-    openaiInstance = { createChatCompletion: jest.fn() }
+    // Create a mock OpenAI instance
+    openaiInstance = {
+      chat: {
+        completions: {
+          create: jest.fn(),
+        },
+      },
+    }
   })
 
   it('should generate a script based on a given topic', async () => {
@@ -28,16 +34,14 @@ describe('generateScriptForTopic', () => {
     const outputPath = 'output.md'
 
     // Simulate the OpenAI API response
-    openaiInstance.createChatCompletion.mockResolvedValue({
-      data: {
-        choices: [
-          {
-            message: {
-              content: `# ${topic}\n\nContent about space exploration...`,
-            },
+    openaiInstance.chat.completions.create.mockResolvedValue({
+      choices: [
+        {
+          message: {
+            content: `# ${topic}\n\nContent about space exploration...`,
           },
-        ],
-      },
+        },
+      ],
     })
 
     // Call the generateScriptForTopic function with the topic and mock dependencies
@@ -72,7 +76,7 @@ describe('generateScriptForTopic', () => {
     const outputPath = 'output.md'
 
     // Simulate an OpenAI API error
-    openaiInstance.createChatCompletion.mockRejectedValue(
+    openaiInstance.chat.completions.create.mockRejectedValue(
       new Error('API Error'),
     )
 

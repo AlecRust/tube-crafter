@@ -2,7 +2,7 @@ const axios = require('axios')
 const fs = require('fs-extra')
 const generateImageFromText = require('./generateImageFromText')
 const { createCanvas } = require('canvas')
-const { OpenAIApi, Configuration } = require('openai')
+const OpenAI = require('openai')
 
 jest.mock('axios')
 jest.mock('fs-extra')
@@ -27,19 +27,21 @@ describe('generateImageFromText', () => {
     fs.outputFile.mockReset()
 
     // Create a mock OpenAI instance
-    openaiInstance = new OpenAIApi(new Configuration({}))
-    openaiInstance.createChatCompletion = jest.fn().mockResolvedValue({
-      data: {
-        choices: [
-          { message: { content: 'a landscape with mountains and lake' } },
-        ],
+    openaiInstance = new OpenAI({})
+    openaiInstance.chat = {
+      completions: {
+        create: jest.fn().mockResolvedValue({
+          choices: [
+            { message: { content: 'a landscape with mountains and lake' } },
+          ],
+        }),
       },
-    })
-    openaiInstance.createImage = jest.fn().mockResolvedValue({
-      data: {
+    }
+    openaiInstance.images = {
+      generate: jest.fn().mockResolvedValue({
         data: [{ url: 'https://example.com/image.png' }],
-      },
-    })
+      }),
+    }
   })
 
   it('should generate an image based on given text content', async () => {

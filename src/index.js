@@ -4,18 +4,16 @@ const yargs = require('yargs/yargs')
 const { hideBin } = require('yargs/helpers')
 const fs = require('fs-extra')
 const path = require('path')
-const { Configuration, OpenAIApi } = require('openai')
+const OpenAI = require('openai')
 const generateScriptForTopic = require('./generateScriptForTopic')
 const generateImageFromText = require('./generateImageFromText')
 const convertTextToSpeech = require('./convertTextToSpeech')
 const createAndConcatenateVideos = require('./createAndConcatenateVideos')
 const { parseInputFile } = require('./utils')
 
-const openaiInstance = new OpenAIApi(
-  new Configuration({
-    apiKey: process.env.OPENAI_API_KEY,
-  }),
-)
+const openaiInstance = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+})
 
 async function processTextLines(lines, outputDir) {
   console.log(`Found ${lines.length} text lines to process`)

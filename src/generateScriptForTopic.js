@@ -4,7 +4,7 @@ const generateScriptForTopic = async (topic, outputPath, openaiInstance) => {
   try {
     console.log(`📝 Generating script for a video about ${topic}\n`)
 
-    const gpt3Response = await openaiInstance.createChatCompletion({
+    const gpt3Response = await openaiInstance.chat.completions.create({
       model: 'gpt-3.5-turbo',
       messages: [
         {
@@ -19,7 +19,7 @@ const generateScriptForTopic = async (topic, outputPath, openaiInstance) => {
     })
 
     // Extract the script content
-    const scriptContent = gpt3Response.data.choices[0].message.content.trim()
+    const scriptContent = gpt3Response.choices[0].message.content.trim()
 
     // Write the Markdown file
     await fs.outputFile(outputPath, scriptContent)

@@ -7,7 +7,7 @@ const targetWidth = 1920
 const targetHeight = 1080
 
 const generatePrompt = async (content, openaiInstance) => {
-  const response = await openaiInstance.createChatCompletion({
+  const response = await openaiInstance.chat.completions.create({
     model: 'gpt-3.5-turbo',
     messages: [
       {
@@ -21,7 +21,7 @@ const generatePrompt = async (content, openaiInstance) => {
       },
     ],
   })
-  return response.data.choices[0].message.content.trim()
+  return response.choices[0].message.content.trim()
 }
 
 const generateImageFromText = async (line, outputPath, openaiInstance) => {
@@ -29,13 +29,13 @@ const generateImageFromText = async (line, outputPath, openaiInstance) => {
     const imagePrompt = await generatePrompt(line.content, openaiInstance)
     console.log('🖼️ Image prompt:', imagePrompt)
 
-    const createImageResponse = await openaiInstance.createImage({
+    const createImageResponse = await openaiInstance.images.generate({
       prompt: `An illustration of ${imagePrompt}`,
       n: 1,
       size: '1024x1024',
     })
 
-    const imageUrl = createImageResponse.data.data[0].url
+    const imageUrl = createImageResponse.data[0].url
     const imageResponse = await axios.get(imageUrl, {
       responseType: 'arraybuffer',
     })

@@ -24,8 +24,8 @@ tube-crafter --script my-script.md
 ## How it works
 
 1. Creates a video script from the topic provided (or uses provided script)
-2. Splits the script into paragraphs
-3. Creates a text-to-speech MP3 for each paragraph
-4. Creates an image for each paragraph
-5. Creates a video for each paragraph (using the MP3 and image)
+2. Splits the script into "text lines" (paragraphs and headings)
+3. Creates a text-to-speech MP3 for each text line
+4. Creates an image for each text line (if heading, text shown in image)
+5. Creates a video for each text line (using the MP3 and image)
 6. Concatenates all the videos into a single video

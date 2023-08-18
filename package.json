@@ -11,6 +11,23 @@
   "files": [
     "src"
   ],
+  "keywords": [
+    "video",
+    "video-creation",
+    "AI",
+    "artificial-intelligence",
+    "content-generation",
+    "automation",
+    "text-to-speech",
+    "CLI",
+    "command-line-tool",
+    "video-production",
+    "content-automation",
+    "video-tool",
+    "video-maker",
+    "openai",
+    "ffmpeg"
+  ],
   "scripts": {
     "start": "node src/index.js",
     "test": "jest",

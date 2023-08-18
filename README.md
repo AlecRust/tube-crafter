@@ -2,9 +2,30 @@
 
 Generate a video from a topic or a script you already have.
 
+## Installation
+
+```sh
+npm install -g tube-crafter
+```
+
+## Prerequisites
+
+- [ffmpeg](https://ffmpeg.org/) must be installed
+- `OPENAI_API_KEY` must be set in your environment
+- Your machine must be able to access Google Cloud ([instructions](https://github.com/googleapis/google-cloud-node/tree/main/packages/google-cloud-texttospeech#quickstart))
+
 ## Usage
 
 ```sh
 tube-crafter --topic "red squirrels"
 tube-crafter --script my-script.md
 ```
+
+## How it works
+
+1. Creates a video script from the topic provided (or uses provided script)
+2. Splits the script into paragraphs
+3. Creates a text-to-speech MP3 for each paragraph
+4. Creates an image for each paragraph
+5. Creates a video for each paragraph (using the MP3 and image)
+6. Concatenates all the videos into a single video

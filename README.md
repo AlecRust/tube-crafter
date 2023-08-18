@@ -21,6 +21,8 @@ tube-crafter --topic "red squirrels"
 tube-crafter --script my-script.md
 ```
 
+When you run the command it will create an `output` directory in the current directory, and a timestamped directory inside for each run. The final video is located at e.g. `output/2023-08-18T11-33-06-013Z/output.mp4`.
+
 ## How it works
 
 1. Creates a video script from the topic provided (or uses provided script)

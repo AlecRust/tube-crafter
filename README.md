@@ -1,4 +1,4 @@
-# tube-crafter [![CI](https://github.com/AlecRust/tube-crafter/actions/workflows/ci.yml/badge.svg)](https://github.com/AlecRust/tube-crafter/actions/workflows/ci.yml) [![npm version](https://badge.fury.io/js/tube-crafter.svg)](https://badge.fury.io/js/tube-crafter)
+# tube-crafter [![CI](https://github.com/AlecRust/tube-crafter/actions/workflows/ci.yml/badge.svg)](https://github.com/AlecRust/tube-crafter/actions/workflows/ci.yml) [![npm version](https://img.shields.io/npm/v/tube-crafter.svg)](https://www.npmjs.com/package/tube-crafter)
 
 Generate a video from a topic, or a script you already have.
 

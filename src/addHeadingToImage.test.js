@@ -1,5 +1,5 @@
 const addHeadingToImage = require('./addHeadingToImage')
-const canvas = require('canvas')
+const { loadImage } = require('canvas')
 const { calculateAvgColor } = require('./utils')
 
 jest.mock('canvas', () => ({
@@ -38,7 +38,7 @@ describe('addHeadingToImage', () => {
     await addHeadingToImage(imageBuffer, text, targetWidth, targetHeight)
 
     // Verify that the loadImage function was called with the correct buffer
-    expect(canvas.loadImage).toHaveBeenCalledWith(imageBuffer)
+    expect(loadImage).toHaveBeenCalledWith(imageBuffer)
 
     // Additional checks could be performed on the canvas context methods
     // like drawImage, fillText, etc., to verify the correct behavior.
